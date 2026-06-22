@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/*
+ * Twoslash 悬停弹层（@shikijs/vitepress-twoslash）默认用 VitePress 的 CSS 变量配色，
+ * 但我们是 Nuxt 不是 VitePress，这些 --vp-* 变量未定义 → 弹层背景透明、文字与下方内容重叠。
+ * 这里把它们映射到 Nuxt UI 的设计 token（--ui-* 已随明/暗主题自动切换）。
+ */
+:root {
+    --vp-c-bg: var(--ui-bg);
+    --vp-c-bg-alt: var(--ui-bg-muted);
+    --vp-c-border: var(--ui-border);
+    --vp-c-divider: var(--ui-border);
+    --vp-c-text-1: var(--ui-text-highlighted);
+    --vp-c-text-2: var(--ui-text-muted);
+    --vp-c-brand: var(--ui-primary);
+    --vp-c-brand-1: var(--ui-primary);
+    --vp-code-block-bg: var(--ui-bg-muted);
+    --vp-code-font-size: 0.85em;
+    --vp-code-line-height: 1.6;
+    --vp-z-index-local-nav: 50;
+    --vp-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* 兜底：确保弹层主体不透明（即便上面某个变量没覆盖到）*/
+.v-popper--theme-twoslash .v-popper__inner,
+.v-popper--theme-twoslash-query .v-popper__inner {
+    background: var(--ui-bg);
+    border: 1px solid var(--ui-border);
+    box-shadow: 0 6px 24px rgb(0 0 0 / 12%);
+}

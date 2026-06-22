@@ -1,0 +1,69 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/docs/**'
+      - 'packages/main/**'
+      - .github/workflows/deploy-docs.yml
+  workflow_dispatch:
+
+# GitHub Pages 部署所需权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同时只跑一个部署，不打断进行中的（保证页面发布完整）
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # trustPolicy: no-downgrade 会拦 @types/node 链路（undici-types），CI 用 flag 绕过，与本地一致
+      - name: Install
+        run: pnpm install --frozen-lockfile --config.trustPolicy=disabled
+
+      # 文档的 twoslash 按库的 dist/index.d.mts 解析类型，必须先构建库
+      - name: Build library (twoslash types)
+        run: pnpm --filter @wzo/calc build
+
+      - name: Generate static docs
+        run: pnpm --filter docs build
+        env:
+          # Project page 部署在 /<仓库名>/ 子路径；将来换自定义域名时改成 /
+          NUXT_APP_BASE_URL: /${{ github.event.repository.name }}/
+
+      # 防止 GitHub Pages 的 Jekyll 忽略 _nuxt 目录
+      - name: Add .nojekyll
+        run: touch packages/docs/.output/public/.nojekyll
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: packages/docs/.output/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

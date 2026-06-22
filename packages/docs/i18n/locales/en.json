@@ -1,0 +1,29 @@
+{
+    "nav": {
+        "guide": "Guide",
+        "api": "API",
+        "examples": "Examples"
+    },
+    "home": {
+        "heroTitle1": "Precision math",
+        "heroTitle2": "+ formatting",
+        "heroDescription": "Fix JS floating-point errors with BigInt, plus type-friendly number formatting. Zero runtime dependencies, fully typed.",
+        "getStarted": "Get started",
+        "whyTitle": "Why {'@'}wzo/calc",
+        "whyDescription": "One library covering precision arithmetic, expression evaluation and number formatting.",
+        "ctaTitle": "Up and running in 5 minutes",
+        "ctaDescription": "pnpm add {'@'}wzo/calc and start computing precisely.",
+        "apiReference": "API reference",
+        "features": {
+            "precision": { "title": "Precision arithmetic", "description": "Represented internally with BigInt — 0.1 + 0.2 is exactly 0.3, never loses precision." },
+            "formatting": { "title": "Type-friendly formatting", "description": "Thousands, percent, compact, fraction, scientific, 4 rounding modes — all via a typed options object." },
+            "expression": { "title": "Expression evaluation", "description": "calc(\"1 + 2 * 3\") with arithmetic, parentheses, math functions (max/min/clamp…) and _fmt formatting." },
+            "apiStyles": { "title": "Multiple API styles", "description": "Chainable chainAdd().sub(), standalone add/addStr, aggregates calcSum — pick what you like." },
+            "zeroDeps": { "title": "Zero runtime deps", "description": "No decimal.js / mathjs — a single lightweight package that runs in the browser and Node." },
+            "typescript": { "title": "Fully typed", "description": "Complete types + JSDoc — hover in your editor for signatures and docs." }
+        }
+    },
+    "page": {
+        "notFound": "Page not found"
+    }
+}

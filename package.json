@@ -1,0 +1,22 @@
+{
+    "name": "calc",
+    "type": "module",
+    "version": "0.0.0",
+    "private": true,
+    "packageManager": "pnpm@10.34.3",
+    "description": "calc monorepo — precision math + number formatting",
+    "scripts": {
+        "build": "pnpm -r --filter \"@wzo/calc\" build",
+        "test": "pnpm -r --filter \"@wzo/calc\" test",
+        "typecheck": "pnpm -r typecheck",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "docs:dev": "pnpm --filter docs dev",
+        "docs:build": "pnpm --filter docs build"
+    },
+    "devDependencies": {
+        "@antfu/eslint-config": "^7.4.3",
+        "eslint": "^9.38.0",
+        "typescript": "^5.9.3"
+    }
+}

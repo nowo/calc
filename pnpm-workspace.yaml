@@ -1,0 +1,10 @@
+minimumReleaseAge: 7200
+
+shamefullyHoist: true
+shellEmulator: true
+
+strictPeerDependencies: false
+trustPolicy: no-downgrade
+packages:
+  - packages/*
+  - '!**/node_modules'

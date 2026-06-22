@@ -1,0 +1,29 @@
+{
+    "nav": {
+        "guide": "指南",
+        "api": "API",
+        "examples": "示例"
+    },
+    "home": {
+        "heroTitle1": "精度数学",
+        "heroTitle2": "+ 数字格式化",
+        "heroDescription": "用 BigInt 修复 JS 浮点误差，提供类型友好的数字格式化。0 运行时依赖，完整 TypeScript。",
+        "getStarted": "快速开始",
+        "whyTitle": "为什么用 {'@'}wzo/calc",
+        "whyDescription": "一个库覆盖精度运算、表达式求值和数字格式化。",
+        "ctaTitle": "5 分钟上手",
+        "ctaDescription": "pnpm add {'@'}wzo/calc，即可开始精确计算。",
+        "apiReference": "API 参考",
+        "features": {
+            "precision": { "title": "精度算术", "description": "内部用 BigInt 表示，0.1 + 0.2 严格等于 0.3，绝不丢精度。" },
+            "formatting": { "title": "类型友好的格式化", "description": "千分位、百分比、压缩、分数、科学记数、4 种舍入，全用带类型提示的对象配置。" },
+            "expression": { "title": "表达式求值", "description": "calc(\"1 + 2 * 3\") 支持四则、括号、数学函数（max/min/clamp…）与 _fmt 格式化。" },
+            "apiStyles": { "title": "多种 API 风格", "description": "链式 chainAdd().sub()、独立函数 add/addStr、聚合 calcSum，按喜好选。" },
+            "zeroDeps": { "title": "0 运行时依赖", "description": "不引 decimal.js / mathjs，单包轻量，浏览器 / Node 都能跑。" },
+            "typescript": { "title": "完整 TypeScript", "description": "完整类型 + JSDoc，编辑器里悬停就有签名和注释提示。" }
+        }
+    },
+    "page": {
+        "notFound": "页面不存在"
+    }
+}

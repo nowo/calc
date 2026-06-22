@@ -1,4 +1,8 @@
-# calc
+<p align="center">
+  <img src="./packages/main/logo.svg" width="88" height="88" alt="calc" />
+</p>
+
+<h1 align="center">calc</h1>
 
 <p align="center"><a href="./README.md">English</a> | <b>简体中文</b></p>
 

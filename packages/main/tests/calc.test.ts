@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { add, addStr, calc, calcAvg, calcMax, calcMin, calcSum, chainAdd, chainDiv, chainMul, chainSub, div, divStr, fmt, getConfig, mul, resetConfig, setConfig, sub } from '../src'
+import { add, addStr, calc, calcAvg, calcMax, calcMedian, calcMin, calcSum, chainAdd, chainDiv, chainMul, chainSub, div, divStr, fmt, getConfig, mod, modStr, mul, pow, powStr, resetConfig, setConfig, sqrt, sqrtStr, sub } from '../src'
 
 describe('calc — expression evaluation (from README)', () => {
     it('precision arithmetic', () => {
@@ -93,6 +93,18 @@ describe('fmt — direct formatting', () => {
         expect(fmt(1.001, { decimals: 0, rounding: 'ceil' })).toBe('2')
     })
 
+    it('directional rounding: ceil / floor / expand (match Math semantics)', () => {
+        // ceil → toward +∞ (consistent with the expression-layer ceil() and Math.ceil)
+        expect(fmt(1.001, { decimals: 0, rounding: 'ceil' })).toBe('2')
+        expect(fmt(-1.001, { decimals: 0, rounding: 'ceil' })).toBe('-1')
+        // floor → toward -∞
+        expect(fmt(1.999, { decimals: 0, rounding: 'floor' })).toBe('1')
+        expect(fmt(-1.001, { decimals: 0, rounding: 'floor' })).toBe('-2')
+        // expand → away from zero (the previous 'ceil' behaviour, now explicitly named)
+        expect(fmt(1.001, { decimals: 0, rounding: 'expand' })).toBe('2')
+        expect(fmt(-1.001, { decimals: 0, rounding: 'expand' })).toBe('-2')
+    })
+
     it('fraction output', () => {
         expect(fmt(0.5, { output: 'fraction' })).toBe('1/2')
         expect(fmt(0.25, { output: 'fraction' })).toBe('1/4')
@@ -132,6 +144,16 @@ describe('standalone operations add/sub/mul/div', () => {
     it('str-suffix returns string', () => {
         expect(addStr('0.1', '0.2')).toBe('0.3')
     })
+
+    it('sqrt / pow / mod (number and string variants)', () => {
+        expect(sqrt(4)).toBe(2)
+        expect(sqrtStr('2', { _precision: 6 })).toBe('1.414214')
+        expect(pow(2, 10)).toBe(1024)
+        expect(powStr('1.02', 5)).toBe('1.1040808032')
+        expect(pow(2, -1)).toBe(0.5)
+        expect(mod(-7, 3)).toBe(-1)
+        expect(modStr('5.5', '2')).toBe('1.5')
+    })
 })
 
 describe('aggregation', () => {
@@ -148,6 +170,14 @@ describe('aggregation', () => {
     it('calcMax / calcMin', () => {
         expect(calcMax([3, 1, 2])).toBe('3')
         expect(calcMin([3, 1, 2])).toBe('1')
+    })
+
+    it('calcMedian (odd / even count, per-call precision)', () => {
+        expect(calcMedian([3, 1, 2])).toBe('2')
+        expect(calcMedian([1, 2, 3, 4])).toBe('2.5') // average of the two middle values
+        expect(calcMedian([10, 20, 25], { _precision: 2 })).toBe('20')
+        expect(calcMedian('score', [{ score: 80 }, { score: 90 }])).toBe('85')
+        expect(calcMedian([])).toBe('0')
     })
 
     it('skips null / undefined values (common from backends, does not throw)', () => {
@@ -210,6 +240,12 @@ describe('built-in math functions', () => {
         expect(calc('mod(10, 3)')).toBe('1')
         expect(calc('mod(-7, 3)')).toBe('-1') // remainder sign matches the dividend
     })
+    it('sqrt (rounded to division precision)', () => {
+        expect(calc('sqrt(4)')).toBe('2')
+        expect(calc('sqrt(2)', { _precision: 6 })).toBe('1.414214')
+        expect(calc('sqrt(9) + sqrt(16)')).toBe('7')
+        expect(() => calc('sqrt(-1)')).toThrow() // negative radicand
+    })
     it('math functions with template interpolation', () => {
         const a = 3
         const b = 5
@@ -218,7 +254,7 @@ describe('built-in math functions', () => {
     })
     it('invalid usage throws', () => {
         expect(() => calc('pow(2, 0.5)')).toThrow() // non-integer exponent
-        expect(() => calc('sqrt(4)')).toThrow() // unknown function
+        expect(() => calc('unknownFn(4)')).toThrow() // unknown function
     })
 })
 

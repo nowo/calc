@@ -394,16 +394,62 @@ export const roundHalfUp = (a: string | number | bigint, decimals: number): stri
 }
 
 /**
- * Rounds away from zero to N decimal places (rounds up whenever there is any remainder).
+ * Rounds toward `+∞` to N decimal places (same as `Math.ceil`): positive values round up,
+ * negative values round toward zero.
  *
  * @param a Input value
  * @param decimals Number of decimal places to keep
  * @returns Canonical string after rounding
  * @example
  * roundCeil('1.231', 2)  // '1.24'
- * roundCeil('-1.231', 2) // '-1.24'
+ * roundCeil('-1.231', 2) // '-1.23' (toward +∞)
  */
 export const roundCeil = (a: string | number | bigint, decimals: number): string => {
+    const d = parse(a)
+    if (d.exp <= decimals) return format(d)
+    const drop = d.exp - decimals
+    const divisor = TEN ** BigInt(drop)
+    const remainder = d.digits % divisor
+    let q = d.digits / divisor
+    if (remainder !== 0n && d.sign > 0) q += 1n // only positive magnitudes grow toward +∞
+    if (q === 0n) return '0'
+    return format({ sign: d.sign, digits: q, exp: decimals })
+}
+
+/**
+ * Rounds toward `-∞` to N decimal places (same as `Math.floor`): positive values round toward zero,
+ * negative values round away from zero.
+ *
+ * @param a Input value
+ * @param decimals Number of decimal places to keep
+ * @returns Canonical string after rounding
+ * @example
+ * roundFloor('1.239', 2)  // '1.23'
+ * roundFloor('-1.231', 2) // '-1.24' (toward -∞)
+ */
+export const roundFloor = (a: string | number | bigint, decimals: number): string => {
+    const d = parse(a)
+    if (d.exp <= decimals) return format(d)
+    const drop = d.exp - decimals
+    const divisor = TEN ** BigInt(drop)
+    const remainder = d.digits % divisor
+    let q = d.digits / divisor
+    if (remainder !== 0n && d.sign < 0) q += 1n // only negative magnitudes grow toward -∞
+    if (q === 0n) return '0'
+    return format({ sign: d.sign, digits: q, exp: decimals })
+}
+
+/**
+ * Rounds away from zero to N decimal places (rounds up whenever there is any remainder, ignoring sign).
+ *
+ * @param a Input value
+ * @param decimals Number of decimal places to keep
+ * @returns Canonical string after rounding
+ * @example
+ * roundExpand('1.231', 2)  // '1.24'
+ * roundExpand('-1.231', 2) // '-1.24'
+ */
+export const roundExpand = (a: string | number | bigint, decimals: number): string => {
     const d = parse(a)
     if (d.exp <= decimals) return format(d)
     const drop = d.exp - decimals
@@ -439,4 +485,91 @@ export const roundBanker = (a: string | number | bigint, decimals: number): stri
     else if (remainder === halved && q % 2n === 1n) q += 1n
     if (q === 0n) return '0'
     return format({ sign: d.sign, digits: q, exp: decimals })
+}
+
+// ───── Higher-order operations ─────
+/** Integer square root of a non-negative BigInt (floor), via Newton's method. */
+const isqrt = (value: bigint): bigint => {
+    if (value < 2n) return value
+    let x = value
+    let y = (x + 1n) / 2n
+    while (y < x) {
+        x = y
+        y = (x + value / x) / 2n
+    }
+    return x
+}
+
+/**
+ * High-precision square root `√a`, result rounded to `precision` decimal places (half-up).
+ *
+ * Computed entirely with BigInt integer square root — no floating-point error. Perfect squares
+ * return exact integers; irrational roots are truncated/rounded to `precision` places.
+ *
+ * @param a Radicand (must be `>= 0`)
+ * @param precision Maximum decimal places to retain, defaults to `50`
+ * @returns Canonical string of the square root
+ * @throws When `a` is negative
+ * @example
+ * sqrt('4')     // '2'
+ * sqrt('2', 6)  // '1.414214'
+ */
+export const sqrt = (a: string | number | bigint, precision: number = 50): string => {
+    const d = parse(a)
+    if (d.sign < 0) throw new Error(`Cannot take the square root of a negative number: "${a}"`)
+    if (d.digits === 0n) return '0'
+    // √(digits·10^-exp)·10^(precision+1) = √(digits·10^(2·(precision+1) - exp))
+    const p1 = precision + 1
+    const k = 2 * p1 - d.exp
+    const m = k >= 0 ? d.digits * pow10(k) : d.digits / pow10(-k)
+    const s = isqrt(m) // ≈ √a · 10^(precision+1); inspect last digit to round to `precision`
+    const rounded = s % TEN >= 5n ? s / TEN + 1n : s / TEN
+    return format(fromBig(rounded, precision))
+}
+
+/**
+ * High-precision integer-exponent power `a ^ n`.
+ *
+ * The exponent must be an integer (fractional exponents are not supported). Positive exponents
+ * are exact (repeated multiplication); negative exponents divide and are rounded to `precision`.
+ *
+ * @param base Base value
+ * @param exponent Integer exponent (may be negative)
+ * @param precision Decimal places for the reciprocal when the exponent is negative, defaults to `50`
+ * @returns Canonical string of the power
+ * @throws When the exponent is not an integer
+ * @example
+ * pow('2', 10)   // '1024'
+ * pow('2', -1)   // '0.5'
+ */
+export const pow = (base: string | number | bigint, exponent: string | number | bigint, precision: number = 50): string => {
+    const e = Number(exponent)
+    if (!Number.isInteger(e)) throw new Error(`pow() exponent must be an integer: "${exponent}"`)
+    const b = String(base)
+    let r = '1'
+    for (let i = 0; i < Math.abs(e); i++) r = mul(r, b)
+    return e < 0 ? div('1', r, precision) : r
+}
+
+/**
+ * Modulo `a % b` — the remainder carries the sign of the dividend (same as JS `%`). Exact, no rounding.
+ *
+ * @param a Dividend
+ * @param b Divisor
+ * @returns Canonical string of the remainder
+ * @throws When the divisor is zero
+ * @example
+ * mod('10', '3')  // '1'
+ * mod('-7', '3')  // '-1'
+ */
+export const mod = (a: string | number | bigint, b: string | number | bigint): string => {
+    const da = parse(a)
+    const db = parse(b)
+    if (db.digits === 0n) throw new Error('mod division by zero')
+    if (da.digits === 0n) return '0'
+    const { aN, bN, exp } = align(da, db)
+    const sa = BigInt(da.sign) * aN
+    const sb = BigInt(db.sign) * bN
+    const r = sa - (sa / sb) * sb // BigInt division truncates toward zero ⇒ remainder follows dividend sign
+    return format(fromBig(r, exp))
 }

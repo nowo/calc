@@ -2,17 +2,18 @@
 import type { IGlobalConfig } from './config'
 import { getConfig } from './config'
 import { evaluate } from './parser'
-import { abs, cmp, div, format as fmtDecimal, mul, parse, roundBanker, roundCeil, roundHalfUp, truncate } from './precision'
+import { abs, cmp, div, format as fmtDecimal, mul, parse, roundBanker, roundCeil, roundExpand, roundFloor, roundHalfUp, truncate } from './precision'
 
 /**
- * Rounding strategy. Includes JS-style aliases: `'round'`≡`'halfUp'` (same as `Math.round`),
- * `'trunc'`≡`'truncate'` (same as `Math.trunc`, truncate toward zero),
+ * Rounding strategy. Directional modes match `Math`: `'ceil'` rounds toward `+∞`, `'floor'` toward `-∞`,
+ * `'expand'` away from zero, `'truncate'` toward zero. Includes JS-style aliases:
+ * `'round'`≡`'halfUp'` (same as `Math.round`), `'trunc'`≡`'truncate'` (same as `Math.trunc`),
  * `'halfEven'`≡`'banker'` (same as `Intl.NumberFormat` `roundingMode: 'halfEven'`, banker's rounding).
  */
-export type Rounding = 'truncate' | 'trunc' | 'halfUp' | 'round' | 'banker' | 'halfEven' | 'ceil'
+export type Rounding = 'truncate' | 'trunc' | 'halfUp' | 'round' | 'banker' | 'halfEven' | 'ceil' | 'floor' | 'expand'
 
-// Internal canonical rounding names (the 4 modes recognized by applyRounding)
-type Canon = 'truncate' | 'halfUp' | 'banker' | 'ceil'
+// Internal canonical rounding names (the modes recognized by applyRounding)
+type Canon = 'truncate' | 'halfUp' | 'banker' | 'ceil' | 'floor' | 'expand'
 
 /**
  * Format options object — passed to {@link fmt} / `calc`'s `_fmt` / chaining terminators.
@@ -66,6 +67,8 @@ const ROUNDING_ALIAS: Record<Rounding, Canon> = {
     banker: 'banker',
     halfEven: 'banker',
     ceil: 'ceil',
+    floor: 'floor',
+    expand: 'expand',
 }
 
 // IFormat.output (human-readable word / token symbol) → flat boolean field
@@ -93,6 +96,8 @@ const applyRounding = (value: string, decimals: number, mode: Canon): string => 
         case 'halfUp': return roundHalfUp(value, decimals)
         case 'banker': return roundBanker(value, decimals)
         case 'ceil': return roundCeil(value, decimals)
+        case 'floor': return roundFloor(value, decimals)
+        case 'expand': return roundExpand(value, decimals)
         case 'truncate':
         default: return truncate(value, decimals)
     }

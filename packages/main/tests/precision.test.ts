@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { abs, add, cmp, div, mul, neg, roundBanker, roundCeil, roundHalfUp, sub, truncate } from '../src/utils/precision'
+import { abs, add, cmp, div, mod, mul, neg, pow, roundBanker, roundCeil, roundExpand, roundFloor, roundHalfUp, sqrt, sub, truncate } from '../src/utils/precision'
 
 describe('precision arithmetic', () => {
     it('add resolves classic floating-point cases', () => {
@@ -77,10 +77,22 @@ describe('precision arithmetic', () => {
         expect(roundHalfUp('1.5', 0)).toBe('2')
     })
 
-    it('roundCeil (away from zero)', () => {
+    it('roundCeil (toward +∞, like Math.ceil)', () => {
         expect(roundCeil('1.001', 0)).toBe('2')
-        expect(roundCeil('-1.001', 0)).toBe('-2')
+        expect(roundCeil('-1.001', 0)).toBe('-1') // negatives round toward zero
         expect(roundCeil('1.5', 0)).toBe('2')
+    })
+
+    it('roundFloor (toward -∞, like Math.floor)', () => {
+        expect(roundFloor('1.999', 0)).toBe('1') // positives round toward zero
+        expect(roundFloor('-1.001', 0)).toBe('-2')
+        expect(roundFloor('-1.5', 0)).toBe('-2')
+    })
+
+    it('roundExpand (away from zero)', () => {
+        expect(roundExpand('1.001', 0)).toBe('2')
+        expect(roundExpand('-1.001', 0)).toBe('-2')
+        expect(roundExpand('1.5', 0)).toBe('2')
     })
 
     it('roundBanker (exact 0.5 rounds to even)', () => {
@@ -88,6 +100,31 @@ describe('precision arithmetic', () => {
         expect(roundBanker('1.5', 0)).toBe('2')
         expect(roundBanker('2.5', 0)).toBe('2')
         expect(roundBanker('3.5', 0)).toBe('4')
+    })
+
+    it('sqrt (BigInt integer square root, rounded to precision)', () => {
+        expect(sqrt('4')).toBe('2')
+        expect(sqrt('0')).toBe('0')
+        expect(sqrt('152.2756')).toBe('12.34')
+        expect(sqrt('2', 6)).toBe('1.414214')
+        expect(sqrt('2', 10)).toBe('1.4142135624')
+        expect(() => sqrt('-1')).toThrow()
+    })
+
+    it('pow (integer exponent, negative uses division)', () => {
+        expect(pow('2', 10)).toBe('1024')
+        expect(pow('1.1', 2)).toBe('1.21')
+        expect(pow('2', -1)).toBe('0.5')
+        expect(pow('5', 0)).toBe('1')
+        expect(() => pow('2', 0.5)).toThrow()
+    })
+
+    it('mod (remainder follows dividend sign, exact)', () => {
+        expect(mod('10', '3')).toBe('1')
+        expect(mod('-7', '3')).toBe('-1')
+        expect(mod('7', '-3')).toBe('1')
+        expect(mod('5.5', '2')).toBe('1.5')
+        expect(() => mod('1', '0')).toThrow()
     })
 
     it('supports scientific notation input', () => {

@@ -74,6 +74,43 @@ export function calcAvg(keyOrArr: string | Val[], listOrOpt?: Item[] | IPrecisio
     return calcAvgWith(configWithPrecision(o), keyOrArr, list)
 }
 
+/** Computes the median with the given config precision (shared by the default {@link calcMedian} export and per-call precision entry points). */
+export const calcMedianWith = (cfg: IGlobalConfig, keyOrArr: string | Val[], list?: Item[]): string => {
+    const values = pickValues(keyOrArr, list)
+    if (values.length === 0) return '0'
+    const sorted = values.slice().sort((x, y) => cmp(x, y))
+    const n = sorted.length
+    const mid = n >> 1
+    // Odd count ⇒ the middle value; even count ⇒ the average of the two middle values
+    if (n % 2 === 1) return sorted[mid]!
+    return divStr(addStr(sorted[mid - 1]!, sorted[mid]!), '2', cfg._precision)
+}
+
+/**
+ * Computes the median (middle value of the sorted collection). Returns `'0'` for an empty collection.
+ * For an even count, returns the average of the two middle values (uses the division precision).
+ *
+ * Precision defaults to the global `_precision`; pass `{ _precision }` as the **last** argument
+ * to override it for this call only (does not affect the global config).
+ *
+ * The first argument is either a value array (`[1,2,3]`) or a field name (`'price'`
+ * used together with an array of objects as the second argument).
+ *
+ * @returns Median value (`string`)
+ * @example
+ * calcMedian([3, 1, 2])                            // '2'
+ * calcMedian([1, 2, 3, 4])                         // '2.5' (average of the two middle values)
+ * calcMedian('score', [{ score: 80 }, { score: 90 }]) // '85'
+ */
+export function calcMedian(arr: Val[], opt?: IPrecisionOption): string
+export function calcMedian(key: string, list: Item[], opt?: IPrecisionOption): string
+export function calcMedian(keyOrArr: string | Val[], listOrOpt?: Item[] | IPrecisionOption, opt?: IPrecisionOption): string {
+    const isFieldForm = Array.isArray(listOrOpt)
+    const list = isFieldForm ? listOrOpt : undefined
+    const o = isFieldForm ? opt : listOrOpt
+    return calcMedianWith(configWithPrecision(o), keyOrArr, list)
+}
+
 /**
  * Returns the maximum value (numeric comparison, not lexicographic).
  *

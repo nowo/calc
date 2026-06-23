@@ -6,7 +6,7 @@
 //   unary   := ('+' | '-')? primary
 //   primary := NUMBER | IDENT | FN '(' args ')' | '(' addSub ')'
 
-import { abs, add, cmp, div, mul, neg, sub, truncate } from './precision'
+import { abs, add, cmp, div, mod, mul, neg, pow, sqrt, sub, truncate } from './precision'
 
 // ───── Tokenizer ─────
 type TokenType
@@ -107,20 +107,6 @@ const mathSign = (x: string): string => {
     const c = cmp(x, '0')
     return c > 0 ? '1' : c < 0 ? '-1' : '0'
 }
-/** Integer exponentiation (exponent must be an integer; negative exponents use division) */
-const mathPow = (base: string, expStr: string, precision: number): string => {
-    const e = Number(expStr)
-    if (!Number.isInteger(e)) throw new Error(`pow() exponent must be an integer: "${expStr}"`)
-    let r = '1'
-    for (let i = 0; i < Math.abs(e); i++) r = mul(r, base)
-    return e < 0 ? div('1', r, precision) : r
-}
-/** Modulo (remainder has the same sign as the dividend, same as JS %) */
-const mathMod = (a: string, b: string, precision: number): string => {
-    if (cmp(b, '0') === 0) throw new Error('mod division by zero')
-    const q = truncate(div(a, b, precision), 0) // truncate-toward-zero quotient
-    return sub(a, mul(q, b))
-}
 /** Pick a value from args by comparison (used for min / max) */
 const pickBy = (name: string, args: string[], keep: (c: number) => boolean): string => {
     if (args.length === 0) throw new Error(`${name}() requires at least 1 argument`)
@@ -137,6 +123,7 @@ const FN_ARITY: Record<string, number> = {
     ceil: 1,
     round: 1,
     trunc: 1,
+    sqrt: 1,
     pow: 2,
     mod: 2,
     clamp: 3,
@@ -161,10 +148,12 @@ const applyFn = (name: string, args: string[], precision: number): string => {
             return mathFloor(add(args[0]!, '0.5')) // same as Math.round (half rounds toward +∞)
         case 'trunc':
             return truncate(args[0]!, 0)
+        case 'sqrt':
+            return sqrt(args[0]!, precision)
         case 'pow':
-            return mathPow(args[0]!, args[1]!, precision)
+            return pow(args[0]!, args[1]!, precision)
         case 'mod':
-            return mathMod(args[0]!, args[1]!, precision)
+            return mod(args[0]!, args[1]!)
         case 'min':
             return pickBy('min', args, c => c < 0)
         case 'max':

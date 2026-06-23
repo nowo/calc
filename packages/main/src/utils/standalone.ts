@@ -124,3 +124,73 @@ export function divStr(...args: Array<Val | IPrecisionOption>): string {
     const [values, opt] = splitPrecision(args)
     return divStrWith(configWithPrecision(opt), ...values)
 }
+
+/**
+ * High-precision square root `√a`, result as `string` (no precision loss).
+ *
+ * Precision defaults to the global `_precision`; pass `{ _precision }` as the last argument to override it.
+ *
+ * @param a Radicand (must be `>= 0`)
+ * @param opt Optional per-call precision override
+ * @returns Square root (`string`)
+ * @example
+ * sqrtStr('2', { _precision: 6 }) // '1.414214'
+ */
+export const sqrtStr = (a: Val, opt?: IPrecisionOption): string => precision.sqrt(a, configWithPrecision(opt)._precision)
+/**
+ * High-precision square root `√a`, result as `number`.
+ *
+ * @param a Radicand (must be `>= 0`)
+ * @param opt Optional per-call precision override
+ * @returns Square root (`number`)
+ * @example
+ * sqrt(4) // 2
+ */
+export const sqrt = (a: Val, opt?: IPrecisionOption): number => Number(sqrtStr(a, opt))
+
+/**
+ * Integer-exponent power `base ^ exponent`, result as `string`.
+ *
+ * The exponent must be an integer. Negative exponents divide and are rounded to the call precision.
+ *
+ * @param base Base value
+ * @param exponent Integer exponent
+ * @param opt Optional per-call precision override (used for negative exponents)
+ * @returns Power (`string`)
+ * @example
+ * powStr('1.02', 5) // '1.1040808032'
+ */
+export const powStr = (base: Val, exponent: Val, opt?: IPrecisionOption): string =>
+    precision.pow(base, exponent, configWithPrecision(opt)._precision)
+/**
+ * Integer-exponent power `base ^ exponent`, result as `number`.
+ *
+ * @param base Base value
+ * @param exponent Integer exponent
+ * @param opt Optional per-call precision override (used for negative exponents)
+ * @returns Power (`number`)
+ * @example
+ * pow(2, 10) // 1024
+ */
+export const pow = (base: Val, exponent: Val, opt?: IPrecisionOption): number => Number(powStr(base, exponent, opt))
+
+/**
+ * Modulo `a % b`, result as `string` (remainder carries the dividend's sign; exact, no rounding).
+ *
+ * @param a Dividend
+ * @param b Divisor
+ * @returns Remainder (`string`)
+ * @example
+ * modStr('10', '3') // '1'
+ */
+export const modStr = (a: Val, b: Val): string => precision.mod(a, b)
+/**
+ * Modulo `a % b`, result as `number`.
+ *
+ * @param a Dividend
+ * @param b Divisor
+ * @returns Remainder (`number`)
+ * @example
+ * mod(-7, 3) // -1
+ */
+export const mod = (a: Val, b: Val): number => Number(modStr(a, b))

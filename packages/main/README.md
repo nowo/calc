@@ -23,9 +23,9 @@ JavaScript's native floating-point gets it wrong (`0.1 + 0.2 === 0.3000000000000
 ## ✨ Features
 
 - 🎯 **Precision arithmetic** — represented internally as `digits × 10^(-exp)`; every rational operation is exactly correct
-- 🧮 **Expression evaluation** — `calc('1 + 2 * 3')`: pure arithmetic + math functions (`abs`/`min`/`max`/`pow`/`mod`/`clamp`…); use template interpolation for variables
+- 🧮 **Expression evaluation** — `calc('1 + 2 * 3')`: pure arithmetic + math functions (`abs`/`min`/`max`/`sqrt`/`pow`/`mod`/`clamp`…); use template interpolation for variables
 - 🪢 **Computation / display separation** — `calc` throws on error (for computation); `fmt` is the display variant of calc — supports arithmetic and falls back to `_error` on failure (for template rendering)
-- 🎨 **Type-friendly formatting** — thousands separators, percent, compact, fraction, scientific, 4 rounding modes — all configured via an `IFormat` object (IDE completion, mistakes caught at write time)
+- 🎨 **Type-friendly formatting** — thousands separators, percent, compact, fraction, scientific, 6 rounding modes — all configured via an `IFormat` object (IDE completion, mistakes caught at write time)
 - 🔗 **Chaining / standalone functions / aggregation** and more API styles
 - 📦 **Zero runtime dependencies**, runs in the browser and Node, complete TypeScript types
 
@@ -65,7 +65,7 @@ calc('max(3, 5) * 2') // math functions
 calc(`${price} * 1.07`) // use template interpolation for variables
 ```
 
-Built-in math functions (exact): `abs` `sign` `floor` `ceil` `round` `trunc` `pow` `mod` `min` `max` `clamp`.
+Built-in math functions: `abs` `sign` `floor` `ceil` `round` `trunc` `sqrt` `pow` `mod` `min` `max` `clamp` (all exact except `sqrt` / negative `pow`, which round to the division precision).
 
 > Expressions are pure arithmetic — no variables / conditionals / comparisons / logic. **Use template interpolation for variables, and write conditionals outside in JS**: `a > 100 ? calc(\`${a} * 0.9\`) : String(a)`.
 
@@ -74,7 +74,7 @@ Built-in math functions (exact): `abs` `sign` `floor` `ceil` `round` `trunc` `po
 | Field | Description |
 | :--- | :--- |
 | `decimals` | Decimal places: `number` fixed, `{ min, max }` range |
-| `rounding` | `'truncate'` (default) / `'halfUp'` / `'banker'` / `'ceil'` (with JS aliases `trunc`/`round`/`halfEven`) |
+| `rounding` | `'truncate'` (default) / `'halfUp'` / `'banker'` / `'ceil'` (→+∞) / `'floor'` (→−∞) / `'expand'` (away from zero) — with JS aliases `trunc`/`round`/`halfEven` |
 | `thousands` | `true` US-style / `'eu'` / `'in'` |
 | `compact` | `true` K/M/B/T / `'zh'` (万/亿) |
 | `clamp` | `[min, max]` value range limit |
@@ -89,8 +89,8 @@ Built-in math functions (exact): `abs` `sign` `floor` `ceil` `round` `trunc` `po
 | `calc(expr, options?)` | Expression evaluation + optional formatting (throws on error) |
 | `fmt(value, options?)` | Display variant of calc: supports arithmetic + formatting (falls back on error) |
 | `chainAdd/chainSub/chainMul/chainDiv` | Chained operations |
-| `add/sub/mul/div` (→ number), `addStr/subStr/mulStr/divStr` (→ string) | Standalone operations |
-| `calcSum/calcAvg/calcMax/calcMin` | Array / object-array aggregation |
+| `add/sub/mul/div/sqrt/pow/mod` (→ number), `addStr/…/sqrtStr/powStr/modStr` (→ string) | Standalone operations |
+| `calcSum/calcAvg/calcMedian/calcMax/calcMin` | Array / object-array aggregation |
 | `setConfig/resetConfig/getConfig` | Global config (error fallback, default format, precision) |
 
 > `div` / `divStr` / `chainDiv` / `calcAvg` accept a trailing `{ _precision }` to set the division precision for that call only, without polluting the global config.

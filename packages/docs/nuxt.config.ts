@@ -1,3 +1,11 @@
+import process from 'node:process'
+
+// 部署到 GitHub Pages 项目站时 baseURL 为 /calc/，本地未设则回退 /；
+// app.head.link 的 href 是写死字符串，Nuxt 不会自动加 baseURL，需手动拼接，否则 favicon 会 404 到域名根
+const baseURL = process.env.NUXT_APP_BASE_URL || '/'
+const baseNoSlash = baseURL.endsWith('/') ? baseURL.slice(0, -1) : baseURL
+const asset = (path: string): string => `${baseNoSlash}/${path}`
+
 export default defineNuxtConfig({
     modules: [
         '@nuxt/ui', // 先让 Nuxt UI 配置 MDC 的 prose 组件
@@ -17,8 +25,8 @@ export default defineNuxtConfig({
     app: {
         head: {
             link: [
-                { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-                { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+                { rel: 'icon', type: 'image/svg+xml', href: asset('favicon.svg') },
+                { rel: 'icon', type: 'image/x-icon', href: asset('favicon.ico') },
             ],
         },
     },

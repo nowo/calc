@@ -23,8 +23,12 @@ if (!page.value) {
 }
 
 // 上一页 / 下一页
+const localePath = useLocalePath()
 const { data: surround } = await useAsyncData(`surround-${route.path}`, () =>
     queryCollectionItemSurroundings(collection.value, slug.value, { fields: ['description'] }))
+// 内容集合的 path 不含语言前缀；UContentSurround 不经 ProseA，需手动本地化，否则中文页的上下页会跳英文页
+const localizedSurround = computed(() =>
+    (surround.value ?? []).map(item => (item ? { ...item, path: localePath((item as { path: string }).path) } : item)))
 
 useSeoMeta({
     title: () => page.value?.title,
@@ -47,7 +51,7 @@ useSeoMeta({
                 <ContentRenderer v-if="page.body" :value="page" />
 
                 <USeparator />
-                <UContentSurround :surround="surround" />
+                <UContentSurround :surround="localizedSurround" />
             </UPageBody>
 
             <template #right>

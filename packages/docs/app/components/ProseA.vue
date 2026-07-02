@@ -9,7 +9,7 @@ import { computed } from 'vue'
 const props = defineProps<{
     href?: string
     target?: string
-    class?: unknown
+    class?: any
     ui?: { base?: string }
 }>()
 

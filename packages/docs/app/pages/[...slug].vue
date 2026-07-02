@@ -34,6 +34,15 @@ useSeoMeta({
     title: () => page.value?.title,
     description: () => page.value?.description,
 })
+
+// “在 GitHub 上编辑此页”：内容文件位于 <contentBase>/<locale>/<stem>.<extension>
+const appConfig = useAppConfig()
+const editUrl = computed(() => {
+    const gh = appConfig.github
+    const stem = page.value?.stem
+    if (!stem || !gh) return ''
+    return `https://github.com/${gh.repo}/edit/${gh.branch}/${gh.contentBase}/${locale.value}/${stem}.${page.value?.extension || 'md'}`
+})
 </script>
 
 <template>
@@ -50,7 +59,16 @@ useSeoMeta({
             <UPageBody>
                 <ContentRenderer v-if="page.body" :value="page" />
 
-                <USeparator />
+                <div>
+                    <div v-if="editUrl" class="mb-2 flex justify-end">
+                        <ULink :to="editUrl" target="_blank"
+                            class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary transition-colors">
+                            <UIcon name="i-lucide-pencil" class="size-4" />
+                            {{ t('page.editThisPage') }}
+                        </ULink>
+                    </div>
+                    <USeparator />
+                </div>
                 <UContentSurround :surround="localizedSurround" />
             </UPageBody>
 

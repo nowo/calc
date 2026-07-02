@@ -24,6 +24,7 @@
         }
     },
     "page": {
-        "notFound": "页面不存在"
+        "notFound": "页面不存在",
+        "editThisPage": "在 GitHub 上编辑此页"
     }
 }

@@ -35,14 +35,12 @@ function toggleLocale() {
             <UContentSearchButton variant="ghost" />
             <UButton :label="locale === 'en' ? '中文' : 'EN'" icon="i-lucide-languages" color="neutral" variant="ghost" @click="toggleLocale" />
             <UColorModeButton />
-            <UButton
-                icon="i-simple-icons-github"
+            <UButton icon="i-simple-icons-github"
                 color="neutral"
                 variant="ghost"
                 to="https://github.com/nowo/calc"
                 target="_blank"
-                aria-label="GitHub"
-            />
+                aria-label="GitHub" />
         </template>
 
         <template #body>

@@ -16,7 +16,7 @@
         "release": "pnpm -r --filter \"@wzo/calc\" release"
     },
     "devDependencies": {
-        "@antfu/eslint-config": "^7.4.3",
+        "@wzo/eslint-config": "^0.0.3",
         "eslint": "^9.38.0",
         "typescript": "^5.9.3"
     }

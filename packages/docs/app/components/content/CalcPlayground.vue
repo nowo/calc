@@ -28,8 +28,12 @@ const apiNames = Object.keys(calcApi).filter(k => (calcApi as any)[k] !== undefi
 
 // 行首是这些关键字的视为语句，不自动打印
 const STMT_KEYWORD = /^(?:const|let|var|function|class|if|else|for|while|do|switch|case|default|return|throw|try|catch|finally|import|export|break|continue|with|async)\b/
+const RE_STMT_START = /^[{}()\][;]/ // 行首是括号 / 分号等，视为语句片段
+const RE_CONSOLE = /^console\s*\./ // console.* 调用原样保留
+const RE_ASSIGN = /[^=!<>]=[^=]/ // 赋值语句（排除 == / === / => 等）
+const RE_TRAIL_SEMI = /;+\s*$/ // 行尾分号
 
-/** 去掉 // 与 /* *​/ 注释，但保留字符串 / 模板字面量里的内容（如 fmt(0.5, '//')） */
+/** 去掉行注释与块注释，但保留字符串 / 模板字面量里的内容（如 fmt(0.5, '//')） */
 function stripComments(code: string): string {
     let out = ''
     let i = 0
@@ -75,9 +79,9 @@ function instrument(code: string): string {
     return stripComments(code).split('\n').map((raw) => {
         const t = raw.trim()
         if (!t) return ''
-        if (/^[{}()\][;]/.test(t) || STMT_KEYWORD.test(t) || /^console\s*\./.test(t)) return raw
-        if (/[^=!<>]=[^=]/.test(t) && !t.includes('=>')) return raw // 赋值语句
-        return `__repl((${t.replace(/;+\s*$/, '')}));`
+        if (RE_STMT_START.test(t) || STMT_KEYWORD.test(t) || RE_CONSOLE.test(t)) return raw
+        if (RE_ASSIGN.test(t) && !t.includes('=>')) return raw // 赋值语句
+        return `__repl((${t.replace(RE_TRAIL_SEMI, '')}));`
     }).join('\n')
 }
 
@@ -174,12 +178,16 @@ onMounted(() => {
             @keydown="onKeydown" />
 
         <div class="cp-bar">
-            <button type="button" class="cp-run" @click="run">运行 ▶</button>
+            <button type="button" class="cp-run" @click="run">
+                运行 ▶
+            </button>
         </div>
 
         <div v-if="lines.length" class="cp-output">
-            <div v-for="(l, i) in lines" :key="i" class="cp-line" :class="{ 'cp-error': l.error }">{{ l.error ? '✕ ' :
-                '→ ' }}{{ l.text }}</div>
+            <div v-for="(l, i) in lines" :key="i" class="cp-line" :class="{ 'cp-error': l.error }">
+                {{ l.error ? '✕ '
+                    : '→ ' }}{{ l.text }}
+            </div>
         </div>
     </div>
 </template>

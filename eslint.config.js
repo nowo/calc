@@ -1,15 +1,9 @@
-import antfu, { GLOB_MARKDOWN_CODE, parserPlain } from '@antfu/eslint-config'
+import defineConfig, { GLOB_MARKDOWN_CODE, parserPlain } from '@wzo/eslint-config'
 
-export default antfu(
+// @wzo/eslint-config 已内置本团队风格（4 空格 / 单引号 / 无分号）及规则；这里只补项目专属项
+export default defineConfig(
     {
-        stylistic: {
-            indent: 4,
-            quotes: 'single',
-            semi: false,
-        },
-        lessOpinionated: true, // 去除antfu的配置
-        typescript: true,
-        vue: false,
+        vue: true,
         ignores: [
             '**/dist/**',
             '**/.nuxt/**',
@@ -17,32 +11,6 @@ export default antfu(
             '**/node_modules/**',
             'demo/**', // 临时杂物，单独处置
         ],
-    },
-    {
-        rules: {
-            'no-console': [
-                'warn',
-                {
-                    allow: ['error', 'warn'],
-                },
-            ],
-            'unused-imports/no-unused-vars': [
-                'warn',
-                {
-                    vars: 'all',
-                    varsIgnorePattern: '^_',
-                    // "args": "after-used",
-                    argsIgnorePattern: '^_',
-                    caughtErrorsIgnorePattern: '^_',
-                },
-            ],
-            // 'node/prefer-global/process': ['error', 'always'],
-            'curly': ['error', 'multi-line', 'consistent'], // 统一的大括号
-            'style/brace-style': ['error', '1tbs', { allowSingleLine: true }], // 统一的大括号
-            // antfu 7.x 的 yaml/indent 与本项目 stylistic.indent:4 冲突，对序列项产生
-            // circular fixes（4 空格要 3、2 空格又要 4），无法满足，关闭以消除自相矛盾
-            'yaml/indent': 'off',
-        },
     },
     {
         // 文档（.md）里的代码块是面向阅读的教学示例：含故意演示精度丢失的数字、

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import theme from '#build/ui/prose/a'
 import { useComponentProps } from '@nuxt/ui/composables/useComponentProps'
 import { tv } from '@nuxt/ui/utils/tv'
 import { computed } from 'vue'
+import theme from '#build/ui/prose/a'
 
 // 覆盖 Nuxt UI 的 ProseA：保留原有 prose 链接样式，仅把站内绝对链接经 localePath 本地化，
 // 让中文页内链跳中文页、英文页内链跳英文页（@nuxtjs/i18n strategy: prefix_except_default）

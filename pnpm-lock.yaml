@@ -8,9 +8,9 @@ importers:
 
   .:
     devDependencies:
-      '@antfu/eslint-config':
-        specifier: ^7.4.3
-        version: 7.7.3(@typescript-eslint/rule-tester@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.61.0(typescript@5.9.3))(@typescript-eslint/utils@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@vue/compiler-sfc@3.5.37)(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.19.21)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(yaml@2.9.0))
+      '@wzo/eslint-config':
+        specifier: ^0.0.3
+        version: 0.0.3(@typescript-eslint/rule-tester@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.61.0(typescript@5.9.3))(@typescript-eslint/utils@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@vue/compiler-sfc@3.5.37)(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.19.21)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(yaml@2.9.0))
       eslint:
         specifier: ^9.38.0
         version: 9.39.4(jiti@2.7.0)
@@ -3233,6 +3233,12 @@ packages:
 
   '@webcontainer/env@1.1.1':
     resolution: {integrity: sha512-6aN99yL695Hi9SuIk1oC88l9o0gmxL1nGWWQ/kNy81HigJ0FoaoTXpytCj6ItzgyCEwA9kF1wixsTuv5cjsgng==}
+
+  '@wzo/eslint-config@0.0.3':
+    resolution: {integrity: sha512-Zh0R6Gj/Brex3Kxa8LSI1LA40SppPm29OfqQDh7F0+SwXKb6LRBKbhlCJiUjPCULhmxsYJrlDLwG3FoI9XFwnw==}
+    engines: {node: '>=18.18'}
+    peerDependencies:
+      eslint: ^9.10.0 || ^10.0.0
 
   a-calc@3.0.0:
     resolution: {integrity: sha512-fTBKkR+huRQFH04RmUGSmNoskm0l6pvPjEe+fiYHEYIpUJloZcR3ylHhSSpyMNuNvM3dQM962Qheh4KPxySDCg==}
@@ -10403,6 +10409,40 @@ snapshots:
       vue: 3.5.37(typescript@5.9.3)
 
   '@webcontainer/env@1.1.1': {}
+
+  '@wzo/eslint-config@0.0.3(@typescript-eslint/rule-tester@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.61.0(typescript@5.9.3))(@typescript-eslint/utils@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@vue/compiler-sfc@3.5.37)(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.19.21)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(yaml@2.9.0))':
+    dependencies:
+      '@antfu/eslint-config': 7.7.3(@typescript-eslint/rule-tester@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.61.0(typescript@5.9.3))(@typescript-eslint/utils@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@vue/compiler-sfc@3.5.37)(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.19.21)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(yaml@2.9.0))
+      eslint: 9.39.4(jiti@2.7.0)
+    transitivePeerDependencies:
+      - '@angular-eslint/eslint-plugin'
+      - '@angular-eslint/eslint-plugin-template'
+      - '@angular-eslint/template-parser'
+      - '@eslint-react/eslint-plugin'
+      - '@eslint/json'
+      - '@next/eslint-plugin-next'
+      - '@prettier/plugin-xml'
+      - '@typescript-eslint/rule-tester'
+      - '@typescript-eslint/typescript-estree'
+      - '@typescript-eslint/utils'
+      - '@unocss/eslint-plugin'
+      - '@vue/compiler-sfc'
+      - astro-eslint-parser
+      - eslint-plugin-astro
+      - eslint-plugin-format
+      - eslint-plugin-jsx-a11y
+      - eslint-plugin-react-hooks
+      - eslint-plugin-react-refresh
+      - eslint-plugin-solid
+      - eslint-plugin-svelte
+      - eslint-plugin-vuejs-accessibility
+      - oxlint
+      - prettier-plugin-astro
+      - prettier-plugin-slidev
+      - supports-color
+      - svelte-eslint-parser
+      - typescript
+      - vitest
 
   a-calc@3.0.0(zod@3.25.76):
     dependencies:

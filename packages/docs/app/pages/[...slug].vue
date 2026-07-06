@@ -13,8 +13,9 @@ const slug = computed(() => {
 const { data: page } = await useAsyncData(`page-${route.path}`, async () => {
     const found = await queryCollection(collection.value).path(slug.value).first()
     // 英文缺译时回退中文，避免空页
-    if (!found && locale.value === 'en')
+    if (!found && locale.value === 'en') {
         return queryCollection('content_zh').path(slug.value).first()
+    }
     return found
 })
 

@@ -11,14 +11,12 @@ const year = new Date().getFullYear()
         </template>
 
         <template #right>
-            <UButton
-                icon="i-simple-icons-github"
+            <UButton icon="i-simple-icons-github"
                 color="neutral"
                 variant="ghost"
                 to="https://github.com/nowo/calc"
                 target="_blank"
-                aria-label="GitHub"
-            />
+                aria-label="GitHub" />
         </template>
     </UFooter>
 </template>
